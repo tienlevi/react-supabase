@@ -1,16 +1,11 @@
-import React, { useState } from "react";
-import {
-  MenuFoldOutlined,
-  MenuUnfoldOutlined,
-  UserOutlined,
-  VideoCameraOutlined,
-} from "@ant-design/icons";
+import { useState } from "react";
+import { MenuFoldOutlined, MenuUnfoldOutlined } from "@ant-design/icons";
 import { Button, Layout, Menu, theme } from "antd";
 import { Link, Outlet } from "react-router-dom";
 
 const { Header, Sider, Content } = Layout;
 
-const LayoutMain: React.FC = () => {
+function LayoutMain() {
   const [collapsed, setCollapsed] = useState(false);
   const {
     token: { colorBgContainer, borderRadiusLG },
@@ -67,6 +62,6 @@ const LayoutMain: React.FC = () => {
       </Layout>
     </Layout>
   );
-};
+}
 
 export default LayoutMain;
