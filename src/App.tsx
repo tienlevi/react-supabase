@@ -1,25 +1,31 @@
 import { Route, Routes } from "react-router-dom";
-import Home from "./pages/Home";
-import CreatePlayer from "./pages/CreatePlayer";
-import EditPlayer from "./pages/EditPlayer";
 import LayoutMain from "./components/Layout/Layout";
-import CreateClub from "./pages/CreateClub";
-import EditClub from "./pages/EditClub";
-import Register from "./pages/Register";
-import Login from "./pages/Login";
+import ProtectRoutes from "./routes/ProtectRoutes";
+import { protectRoutes, publicRoutes } from "./routes/routes";
 
 function App() {
   return (
     <Routes>
       <Route path="/" element={<LayoutMain />}>
-        <Route index element={<Home />} />
-        <Route path="/player/create" element={<CreatePlayer />} />
-        <Route path="/player/edit/:id" element={<EditPlayer />} />
-        <Route path="/club/edit/:id" element={<EditClub />} />
-        <Route path="/club/create" element={<CreateClub />} />
+        {protectRoutes.map((item) => {
+          const Page = item.component;
+          return (
+            <Route
+              key={item.path}
+              path={item.path}
+              element={
+                <ProtectRoutes>
+                  <Page />
+                </ProtectRoutes>
+              }
+            />
+          );
+        })}
       </Route>
-      <Route path="/register" element={<Register />} />
-      <Route path="/login" element={<Login />} />
+      {publicRoutes.map((item) => {
+        const Page = item.component;
+        return <Route key={item.path} path={item.path} element={<Page />} />;
+      })}
     </Routes>
   );
 }
