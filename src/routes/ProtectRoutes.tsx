@@ -1,17 +1,26 @@
-import { ReactNode } from "react";
-import { Navigate, useLocation } from "react-router-dom";
-import { SESSION } from "../constants/enum";
+import { useState, useEffect } from "react";
+import { Navigate, Outlet, useLocation } from "react-router-dom";
 import useAuth from "../hooks/useAuth";
+import Loading from "../components/Loading/Loading";
 
-function ProtectRoutes({ children }: { children: ReactNode }) {
-  const { event } = useAuth();
+function ProtectRoutes() {
+  const { user } = useAuth();
   const location = useLocation();
+  const [loading, setLoading] = useState<boolean>(true);
 
-  if (event === SESSION.SIGNED_OUT) {
-    return <Navigate to={`/login`} state={{ from: location }} replace />;
-  }
+  useEffect(() => {
+    setTimeout(() => {
+      setLoading(false);
+    }, 3000);
+  }, []);
 
-  return children;
+  return loading ? (
+    <Loading />
+  ) : user === null ? (
+    <Navigate to={`/login`} state={{ from: location }} replace />
+  ) : (
+    <Outlet />
+  );
 }
 
 export default ProtectRoutes;

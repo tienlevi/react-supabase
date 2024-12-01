@@ -1,18 +1,15 @@
-import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
 import useMessage from "antd/es/message/useMessage";
 import Button from "../components/ui/Button";
 import Input from "../components/ui/Input";
 import { SignIn } from "../services/auth";
+import { useEffect } from "react";
 import useAuth from "../hooks/useAuth";
-import { SESSION } from "../constants/enum";
 
 interface Inputs {
   email: string;
   password: string;
-  confirmPassword: string;
-  phone: string;
 }
 
 function Login() {
@@ -21,23 +18,22 @@ function Login() {
     handleSubmit,
     formState: { errors },
   } = useForm<Inputs>();
+  const { user } = useAuth();
   const navigate = useNavigate();
   const [message, contextHolder] = useMessage({});
-  const { event } = useAuth();
-
   const onSubmit = async (data: Inputs) => {
     const response = await SignIn(data);
     if (response?.error?.status === 400) {
       return message.error("Login failed");
+    } else {
+      navigate("/");
+      message.success("Login success");
     }
-    return message.success("Login success");
   };
 
   useEffect(() => {
-    if (event === SESSION.SIGNED_IN) {
-      navigate("/");
-    }
-  }, []);
+    user !== null && navigate("/");
+  }, [user]);
 
   return (
     <>

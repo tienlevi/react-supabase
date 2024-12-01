@@ -1,5 +1,4 @@
 import supabase from "../config/supabase";
-import { User } from "../interface";
 
 export const SignIn = async (data: any) => {
   try {
@@ -10,7 +9,7 @@ export const SignIn = async (data: any) => {
   }
 };
 
-export const SignUp = async (data: User) => {
+export const SignUp = async (data: any) => {
   try {
     const { data: user, error } = await supabase.auth.signUp({
       ...data,
@@ -24,10 +23,21 @@ export const SignUp = async (data: User) => {
   }
 };
 
-export const LogOut = async (data: any) => {
+export const LogOut = async () => {
   try {
-    const { error } = await supabase.auth.signOut(data);
+    const { error } = await supabase.auth.signOut();
     return error;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const getUser = async (token: string) => {
+  try {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser(token);
+    return user;
   } catch (error) {
     console.log(error);
   }

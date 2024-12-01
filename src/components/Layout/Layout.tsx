@@ -1,15 +1,21 @@
 import { useState } from "react";
 import { MenuFoldOutlined, MenuUnfoldOutlined } from "@ant-design/icons";
 import { Button, Layout, Menu, theme } from "antd";
-import { Link, Outlet } from "react-router-dom";
+import { Link, Outlet, useNavigate } from "react-router-dom";
+import { LogOut } from "../../services/auth";
 
 const { Header, Sider, Content } = Layout;
 
 function LayoutMain() {
+  const navigate = useNavigate();
   const [collapsed, setCollapsed] = useState(false);
   const {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
+  const handleLogout = async () => {
+    navigate("/login");
+    return await LogOut();
+  };
 
   return (
     <Layout style={{ minHeight: "100vh" }}>
@@ -31,6 +37,10 @@ function LayoutMain() {
             {
               key: "3",
               label: <Link to={`/club/create`}>Create Club</Link>,
+            },
+            {
+              key: "4",
+              label: <div onClick={handleLogout}>Log Out</div>,
             },
           ]}
         />

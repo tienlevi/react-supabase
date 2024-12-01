@@ -6,21 +6,15 @@ import { protectRoutes, publicRoutes } from "./routes/routes";
 function App() {
   return (
     <Routes>
-      <Route path="/" element={<LayoutMain />}>
-        {protectRoutes.map((item) => {
-          const Page = item.component;
-          return (
-            <Route
-              key={item.path}
-              path={item.path}
-              element={
-                <ProtectRoutes>
-                  <Page />
-                </ProtectRoutes>
-              }
-            />
-          );
-        })}
+      <Route element={<ProtectRoutes />}>
+        <Route element={<LayoutMain />}>
+          {protectRoutes.map((item) => {
+            const Page = item.component;
+            return (
+              <Route key={item.path} path={item.path} element={<Page />} />
+            );
+          })}
+        </Route>
       </Route>
       {publicRoutes.map((item) => {
         const Page = item.component;

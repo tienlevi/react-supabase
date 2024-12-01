@@ -4,8 +4,8 @@ import useMessage from "antd/es/message/useMessage";
 import Button from "../components/ui/Button";
 import Input from "../components/ui/Input";
 import { SignUp } from "../services/auth";
+import { useEffect } from "react";
 import useAuth from "../hooks/useAuth";
-import { SESSION } from "../constants/enum";
 
 interface Inputs {
   email: string;
@@ -14,16 +14,15 @@ interface Inputs {
 }
 
 function Register() {
-  const { event } = useAuth();
-  const navigate = useNavigate();
   const {
     register,
     handleSubmit,
     formState: { errors },
     watch,
   } = useForm<Inputs>();
+  const { user } = useAuth();
   const [message, contextHolder] = useMessage({});
-
+  const navigate = useNavigate();
   const onSubmit = async (data: Inputs) => {
     const response = await SignUp(data);
     if (response?.error?.message) {
@@ -32,9 +31,9 @@ function Register() {
     return message.success("Register success");
   };
 
-  if (event === SESSION.SIGNED_IN) {
-    navigate("/");
-  }
+  useEffect(() => {
+    user !== null && navigate("/");
+  }, [user]);
 
   return (
     <>
