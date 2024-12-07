@@ -49,7 +49,13 @@ function ClubList() {
 
   const dataSource = data.map((item: any) => ({ ...item, key: item.id }));
 
-  return <Table columns={columns} dataSource={dataSource} />;
+  return (
+    <Table
+      columns={columns}
+      dataSource={dataSource}
+      pagination={{ pageSize: 5 }}
+    />
+  );
 }
 
 export default ClubList;

@@ -82,7 +82,13 @@ function PlayerList() {
 
   const dataSource = data.map((item) => ({ ...item, key: item.id }));
 
-  return <Table columns={columns} dataSource={dataSource} />;
+  return (
+    <Table
+      columns={columns}
+      dataSource={dataSource}
+      pagination={{ pageSize: 5 }}
+    />
+  );
 }
 
 export default PlayerList;

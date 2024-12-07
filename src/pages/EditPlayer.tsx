@@ -8,6 +8,7 @@ import { UploadOutlined } from "@ant-design/icons";
 import { Club, Player } from "../interface";
 import { getClubs } from "../services/club";
 import { uploadFile } from "../utils/storage";
+import { supabaseUrl } from "../constants";
 
 type FieldType = {
   name?: string;
@@ -16,12 +17,20 @@ type FieldType = {
 };
 
 const EditPlayer = () => {
+  const { id } = useParams();
   const [clubs, setClubs] = useState<Club[]>([]);
   const [data, setData] = useState<Player>();
-  const [fileList, setFileList] = useState<UploadFile[]>([]);
+  const [fileList, setFileList] = useState<UploadFile[]>([
+    {
+      uid: "-1",
+      name: `${data?.image.replace("player/1iq7y75_0/", "")}.png` as any,
+      status: "done",
+      url: `${supabaseUrl}/storage/v1/object/public/${data?.image}`,
+      thumbUrl: `${supabaseUrl}/storage/v1/object/public/${data?.image}`,
+    },
+  ]);
   const [loading, setLoading] = useState<boolean>(false);
   const [loadingButton, setLoadingButton] = useState<boolean>(false);
-  const { id } = useParams();
   const [form] = Form.useForm();
   const [message, contextHolder] = useMessage();
 
@@ -123,7 +132,7 @@ const EditPlayer = () => {
             })}
           />
         </Form.Item>
-        <Form.Item label="Image">
+        <Form.Item label="Image" name="image">
           <Space direction="vertical" style={{ width: "100%" }} size="large">
             <Upload
               onChange={handleChangeImage}
