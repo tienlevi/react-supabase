@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import type { FormProps, UploadFile, UploadProps } from "antd";
 import { Button, Form, Input, InputNumber, Select, Space, Upload } from "antd";
@@ -8,7 +8,6 @@ import { getClubs } from "../services/club";
 import { Club } from "../interface";
 import { UploadOutlined } from "@ant-design/icons";
 import { uploadFile } from "../utils/storage";
-import useAuth from "../hooks/useAuth";
 
 type FieldType = {
   name?: string;
@@ -19,16 +18,24 @@ type FieldType = {
 
 const CreatePlayer = () => {
   const [clubs, setClubs] = useState<Club[]>([]);
-  const [message, contextHolder] = useMessage();
+  const [loading, setLoading] = useState<boolean>(false);
   const [fileList, setFileList] = useState<UploadFile[]>([]);
+  const [message, contextHolder] = useMessage();
 
   const onFinish: FormProps<FieldType>["onFinish"] = async (values) => {
-    const upload: any = await uploadFile(fileList[0].originFileObj);
-    const response = await addPlayer({ ...values, image: upload.fullPath });
-    if (response?.status !== 201) {
-      return message.error("Add error");
+    try {
+      setLoading(true);
+      const upload: any = await uploadFile(fileList[0].originFileObj);
+      const response = await addPlayer({ ...values, image: upload.fullPath });
+      if (response?.status !== 201) {
+        return message.error("Add error");
+      }
+      return message.success("Add success");
+    } catch (error: any) {
+      return message.error(error.message);
+    } finally {
+      setLoading(false);
     }
-    return message.success("Add success");
   };
 
   const handleChangeImage: UploadProps["onChange"] = ({
@@ -105,7 +112,7 @@ const CreatePlayer = () => {
           </Space>
         </Form.Item>
         <Form.Item label={null} style={{ marginTop: 10 }}>
-          <Button type="primary" htmlType="submit">
+          <Button type="primary" htmlType="submit" loading={loading}>
             Submit
           </Button>
         </Form.Item>

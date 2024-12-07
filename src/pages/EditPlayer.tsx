@@ -20,6 +20,7 @@ const EditPlayer = () => {
   const [data, setData] = useState<Player>();
   const [fileList, setFileList] = useState<UploadFile[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
+  const [loadingButton, setLoadingButton] = useState<boolean>(false);
   const { id } = useParams();
   const [form] = Form.useForm();
   const [message, contextHolder] = useMessage();
@@ -52,18 +53,23 @@ const EditPlayer = () => {
     setFileList(newFileList);
   };
 
-  console.log(fileList[0]);
-
   const onFinish: FormProps<FieldType>["onFinish"] = async (values) => {
-    const upload: any = await uploadFile(fileList[0].originFileObj);
-    const response = await editPlayer(id!, {
-      ...values,
-      image: upload.fullPath,
-    });
-    if (response?.status !== 204) {
-      return message.error("Edit error");
+    try {
+      setLoadingButton(true);
+      const upload: any = await uploadFile(fileList[0].originFileObj);
+      const response = await editPlayer(id!, {
+        ...values,
+        image: upload.fullPath,
+      });
+      if (response?.status !== 204) {
+        return message.error("Edit error");
+      }
+      return message.success("Edit success");
+    } catch (error: any) {
+      return message.error(error.message);
+    } finally {
+      setLoadingButton(false);
     }
-    return message.success("Edit success");
   };
 
   const onFinishFailed: FormProps<FieldType>["onFinishFailed"] = (
@@ -129,11 +135,10 @@ const EditPlayer = () => {
             >
               <Button icon={<UploadOutlined />}>Upload</Button>
             </Upload>
-            {/* <input type="file" ref={fileRef} /> */}
           </Space>
         </Form.Item>
         <Form.Item label={null}>
-          <Button type="primary" htmlType="submit">
+          <Button type="primary" htmlType="submit" loading={loadingButton}>
             Submit
           </Button>
         </Form.Item>
