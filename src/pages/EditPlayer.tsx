@@ -1,11 +1,13 @@
 import { useState, useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
-import type { FormProps } from "antd";
-import { Button, Form, Input, InputNumber, Select } from "antd";
+import type { FormProps, UploadFile, UploadProps } from "antd";
+import { Button, Form, Input, InputNumber, Select, Space, Upload } from "antd";
 import { editPlayer, getPlayerById } from "../services/player";
 import useMessage from "antd/es/message/useMessage";
+import { UploadOutlined } from "@ant-design/icons";
 import { Club, Player } from "../interface";
 import { getClubs } from "../services/club";
+import { uploadFile } from "../utils/storage";
 
 type FieldType = {
   name?: string;
@@ -16,6 +18,7 @@ type FieldType = {
 const EditPlayer = () => {
   const [clubs, setClubs] = useState<Club[]>([]);
   const [data, setData] = useState<Player>();
+  const [fileList, setFileList] = useState<UploadFile[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const { id } = useParams();
   const [form] = Form.useForm();
@@ -43,9 +46,20 @@ const EditPlayer = () => {
     })();
   }, []);
 
-  const onFinish: FormProps<FieldType>["onFinish"] = async (values) => {
-    const response = await editPlayer(id!, values);
+  const handleChangeImage: UploadProps["onChange"] = ({
+    fileList: newFileList,
+  }) => {
+    setFileList(newFileList);
+  };
 
+  console.log(fileList[0]);
+
+  const onFinish: FormProps<FieldType>["onFinish"] = async (values) => {
+    const upload: any = await uploadFile(fileList[0].originFileObj);
+    const response = await editPlayer(id!, {
+      ...values,
+      image: upload.fullPath,
+    });
     if (response?.status !== 204) {
       return message.error("Edit error");
     }
@@ -90,6 +104,7 @@ const EditPlayer = () => {
         >
           <InputNumber />
         </Form.Item>
+
         <Form.Item<FieldType> label="Club" name="club">
           <Select
             style={{ width: "100%" }}
@@ -102,7 +117,21 @@ const EditPlayer = () => {
             })}
           />
         </Form.Item>
-
+        <Form.Item label="Image">
+          <Space direction="vertical" style={{ width: "100%" }} size="large">
+            <Upload
+              onChange={handleChangeImage}
+              fileList={fileList}
+              listType="picture"
+              maxCount={1}
+              beforeUpload={() => false}
+              showUploadList={{ removeIcon: true }}
+            >
+              <Button icon={<UploadOutlined />}>Upload</Button>
+            </Upload>
+            {/* <input type="file" ref={fileRef} /> */}
+          </Space>
+        </Form.Item>
         <Form.Item label={null}>
           <Button type="primary" htmlType="submit">
             Submit

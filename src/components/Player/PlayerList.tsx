@@ -4,6 +4,7 @@ import { Button, Space, Table, TableProps } from "antd";
 import { Club, Player } from "../../interface";
 import { deletePlayer, getPlayers } from "../../services/player";
 import { getClubs } from "../../services/club";
+import { supabaseUrl } from "../../constants";
 
 function PlayerList() {
   const [clubs, setClubs] = useState<Club[]>([]);
@@ -40,6 +41,20 @@ function PlayerList() {
       title: "Price",
       dataIndex: "price",
       key: "price",
+    },
+    {
+      title: "Image",
+      dataIndex: "image",
+      key: "image",
+      render: (_, record) => (
+        <img
+          src={`${supabaseUrl}/storage/v1/object/public/${record.image}`}
+          alt=""
+          width={150}
+          height={150}
+          style={{ objectFit: "contain" }}
+        />
+      ),
     },
     {
       title: "Club",
